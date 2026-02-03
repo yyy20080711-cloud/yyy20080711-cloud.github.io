@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的技能 | 杨应尧</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ========== 全局样式（与主页统一） ========== */
+        :root {
+            --bg-primary: #0a0e1f;
+            --bg-secondary: #12182d;
+            --text-primary: #f5f7ff;
+            --text-secondary: #9ba3af;
+            --accent: #42a5f5;
+            --accent-light: #64b5f6;
+            --accent-dark: #1e88e5;
+            --card-bg: rgba(18, 24, 45, 0.6);
+            --card-border: rgba(66, 165, 245, 0.2);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --gradient-text: linear-gradient(90deg, var(--accent), #ab47bc);
+            --gradient-bg: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+        }
+        .light-mode {
+            --bg-primary: #f0f4ff;
+            --bg-secondary: #e6eeff;
+            --text-primary: #12182d;
+            --text-secondary: #5e6573;
+            --accent: #1e88e5;
+            --accent-light: #42a5f5;
+            --accent-dark: #0d47a1;
+            --card-bg: rgba(255, 255, 255, 0.6);
+            --card-border: rgba(30, 136, 229, 0.2);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: "Inter", "Segoe UI", Tahoma, sans-serif;
+            background: var(--gradient-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 0;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        .page-loading {
+            opacity: 0;
+            animation: fadeIn 1.2s ease forwards;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 48px;
+            height: 48px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: var(--shadow);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            z-index: 99;
+        }
+        .back-to-top.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .back-to-top:hover {
+            background: var(--accent-dark);
+            transform: translateY(-4px);
+        }
+        /* ========== 导航栏样式（与主页统一） ========== */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--card-border);
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-text);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .logo i {
+            color: var(--accent);
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .nav-link::after {
+            content: "";
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: var(--text-primary);
+        }
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+        .mode-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .mode-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 12px var(--accent);
+        }
+        /* ========== 技能页面专属样式 ========== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 5%;
+        }
+        .section-title {
+            text-align: center;
+            font-size: 2.8rem;
+            background: var(--gradient-text);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 3rem 0 4rem;
+            animation: slideDown 1s ease forwards;
+            opacity: 0;
+        }
+        @keyframes slideDown {
+            0% { transform: translateY(-30px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        /* 技能卡片网格 */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 2.5rem;
+        }
+        .skill-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2.2rem;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+            text-align: center;
+            transition: all 0.5s ease;
+            cursor: pointer;
+            animation: popIn 1s ease forwards;
+            opacity: 0;
+        }
+        /* 卡片逐次出现动画 */
+        .skill-card:nth-child(1) { animation-delay: 0.2s; }
+        .skill-card:nth-child(2) { animation-delay: 0.4s; }
+        .skill-card:nth-child(3) { animation-delay: 0.6s; }
+        .skill-card:nth-child(4) { animation-delay: 0.8s; }
+        .skill-card:nth-child(5) { animation-delay: 1s; }
+        .skill-card:nth-child(6) { animation-delay: 1.2s; }
+
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            70% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .skill-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 32px rgba(66, 165, 245, 0.2);
+        }
+        .skill-card.clicked {
+            border-color: var(--accent);
+            box-shadow: 0 0 25px rgba(66, 165, 245, 0.4);
+        }
+        /* 技能图标 */
+        .skill-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 1.8rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(66, 165, 245, 0.2), rgba(171, 71, 188, 0.2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8rem;
+            color: var(--accent);
+            transition: all 0.4s ease;
+        }
+        .skill-icon.active {
+            animation: scaleRotate 0.8s ease forwards;
+            background: linear-gradient(135deg, var(--accent), #ab47bc);
+            color: white;
+        }
+        @keyframes scaleRotate {
+            0% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.2) rotate(15deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+        /* 技能标题 */
+        .skill-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        .skill-title.gradient {
+            background: var(--gradient-text);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 3s ease infinite;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        /* 技能描述 */
+        .skill-desc {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            line-height: 1.7;
+            min-height: 7rem;
+            transition: all 0.3s ease;
+        }
+        /* ========== 响应式适配 ========== */
+        @media (max-width: 768px) {
+            .skills-grid {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 1.8rem;
+            }
+            .section-title {
+                font-size: 2.2rem;
+            }
+            .skill-card {
+                padding: 1.8rem;
+            }
+            .skill-icon {
+                width: 80px;
+                height: 80px;
+                font-size: 2.2rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem 3%;
+            }
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+            }
+            .section-title {
+                font-size: 1.8rem;
+                margin: 2rem 0 3rem;
+            }
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+            .back-to-top {
+                width: 40px;
+                height: 40px;
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="page-loading">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-shield-halved"></i>
+            <span>杨应尧</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">主页</a>
+            <a href="skills.html" class="nav-link active">技能</a>
+            <a href="contact.html" class="nav-link">联系我</a>
+        </div>
+        <button class="mode-toggle" id="modeToggle">
+            <i class="fas fa-sun"></i>
+            <span class="mode-text">浅色模式</span>
+        </button>
+    </nav>
+
+    <!-- 回到顶部按钮 -->
+    <div class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- 技能内容容器 -->
+    <div class="container">
+        <h2 class="section-title">我的核心技能</h2>
+        <div class="skills-grid">
+            <!-- 技能卡片1：Linux系统 -->
+            <div class="skill-card">
+                <div class="skill-icon linux-icon">
+                    <i class="fab fa-linux"></i>
+                </div>
+                <h3 class="skill-title">Linux 系统精通</h3>
+                <p class="skill-desc">精通Kali、Ubuntu、CentOS等主流发行版，熟练掌握命令行操作、系统配置与服务搭建，可快速部署渗透测试环境与安全工具链。</p>
+            </div>
+
+            <!-- 技能卡片2：Python开发 -->
+            <div class="skill-card">
+                <div class="skill-icon python-icon">
+                    <i class="fab fa-python"></i>
+                </div>
+                <h3 class="skill-title">Python 安全开发</h3>
+                <p class="skill-desc">使用Python编写自动化渗透测试脚本，实现信息收集、漏洞扫描、密码爆破等功能，开发定制化安全工具提升测试效率。</p>
+            </div>
+
+            <!-- 技能卡片3：渗透测试 -->
+            <div class="skill-card">
+                <div class="skill-icon pentest-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3 class="skill-title">全流程渗透测试</h3>
+                <p class="skill-desc">掌握信息收集、漏洞扫描、权限提升、横向移动与痕迹清理的完整流程，成功挖掘并修复数十个Web与移动端高危漏洞。</p>
+            </div>
+
+            <!-- 技能卡片4：移动端安全 -->
+            <div class="skill-card">
+                <div class="skill-icon mobile-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h3 class="skill-title">移动端安全分析</h3>
+                <p class="skill-desc">专注于Android/iOS应用安全，熟练掌握APK/IPA反编译、动态调试、脱壳与加固分析，擅长挖掘移动端逻辑漏洞与权限漏洞。</p>
+            </div>
+
+            <!-- 技能卡片5：Web安全 -->
+            <div class="skill-card">
+                <div class="skill-icon web-icon">
+                    <i class="fas fa-globe"></i>
+                </div>
+                <h3 class="skill-title">Web 安全加固</h3>
+                <p class="skill-desc">精通XSS、SQL注入、CSRF、SSRF等常见Web漏洞的原理与防御，提供从代码审计到服务器加固的完整安全解决方案。</p>
+            </div>
+
+            <!-- 技能卡片6：工具开发 -->
+            <div class="skill-card">
+                <div class="skill-icon tool-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <h3 class="skill-title">安全工具研发</h3>
+                <p class="skill-desc">开发多款开源安全工具，涵盖信息收集、漏洞检测与自动化利用，工具被业内广泛使用，提升安全测试的自动化与标准化水平。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== 1. 模式切换（与主页同步） ==========
+        const modeToggle = document.getElementById('modeToggle');
+        const modeText = modeToggle.querySelector('.mode-text');
+        const modeIcon = modeToggle.querySelector('i');
+        const body = document.body;
+        const savedMode = localStorage.getItem('themeMode');
+
+        if (savedMode === 'light') {
+            body.classList.add('light-mode');
+            modeText.textContent = '深色模式';
+            modeIcon.classList.replace('fa-sun', 'fa-moon');
+        }
+
+        modeToggle.addEventListener('click', () => {
+            if (body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                modeText.textContent = '浅色模式';
+                modeIcon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem('themeMode', 'dark');
+            } else {
+                body.classList.add('light-mode');
+                modeText.textContent = '深色模式';
+                modeIcon.classList.replace('fa-sun', 'fa-moon');
+                localStorage.setItem('themeMode', 'light');
+            }
+        });
+
+        // ========== 2. 技能卡片交互（点击动画+打字机描述） ==========
+        const skillCards = document.querySelectorAll('.skill-card');
+        skillCards.forEach(card => {
+            const icon = card.querySelector('.skill-icon');
+            const title = card.querySelector('.skill-title');
+            const desc = card.querySelector('.skill-desc');
+            const originalDesc = desc.textContent; // 保存原始描述
+
+            // 点击事件
+            card.addEventListener('click', () => {
+                // 重置其他卡片
+                skillCards.forEach(otherCard => {
+                    if (otherCard !== card) {
+                        otherCard.querySelector('.skill-icon').classList.remove('active');
+                        otherCard.querySelector('.skill-title').classList.remove('gradient');
+                        otherCard.querySelector('.skill-desc').textContent = otherCard.querySelector('.skill-desc').dataset.original || originalDesc;
+                        otherCard.classList.remove('clicked');
+                    }
+                });
+
+                // 激活当前卡片
+                icon.classList.add('active');
+                title.classList.add('gradient');
+                card.classList.add('clicked');
+                desc.textContent = ''; // 清空描述
+                desc.dataset.original = originalDesc; // 存储原始描述
+
+                // 描述打字机效果
+                let charIndex = 0;
+                const typeTimer = setInterval(() => {
+                    if (charIndex < originalDesc.length) {
+                        desc.textContent += originalDesc[charIndex];
+                        charIndex++;
+                    } else {
+                        clearInterval(typeTimer);
+                        // 5秒后重置当前卡片
+                        setTimeout(() => {
+                            icon.classList.remove('active');
+                            title.classList.remove('gradient');
+                        }, 5000);
+                    }
+                }, 60); // 打字速度
+            });
+        });
+
+        // ========== 3. 回到顶部功能 ==========
+        const backToTop = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTop.classList.add('active');
+            } else {
+                backToTop.classList.remove('active');
+            }
+        });
+
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+</html>

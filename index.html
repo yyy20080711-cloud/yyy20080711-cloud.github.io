@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>杨应尧 | 网络安全专家</title>
+    <!-- 引入图标库（可选，增强视觉） -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ========== 全局样式（统一变量+基础重置） ========== */
+        :root {
+            /* 深色模式主变量 */
+            --bg-primary: #0a0e1f;
+            --bg-secondary: #12182d;
+            --text-primary: #f5f7ff;
+            --text-secondary: #9ba3af;
+            --accent: #42a5f5;
+            --accent-light: #64b5f6;
+            --accent-dark: #1e88e5;
+            --card-bg: rgba(18, 24, 45, 0.6);
+            --card-border: rgba(66, 165, 245, 0.2);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --gradient-text: linear-gradient(90deg, var(--accent), #ab47bc);
+            --gradient-bg: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+        }
+        .light-mode {
+            /* 浅色模式变量 */
+            --bg-primary: #f0f4ff;
+            --bg-secondary: #e6eeff;
+            --text-primary: #12182d;
+            --text-secondary: #5e6573;
+            --accent: #1e88e5;
+            --accent-light: #42a5f5;
+            --accent-dark: #0d47a1;
+            --card-bg: rgba(255, 255, 255, 0.6);
+            --card-border: rgba(30, 136, 229, 0.2);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth; /* 平滑滚动 */
+        }
+        body {
+            font-family: "Inter", "Segoe UI", Tahoma, sans-serif;
+            background: var(--gradient-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 0;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        /* 页面加载动画 */
+        .page-loading {
+            opacity: 0;
+            animation: fadeIn 1.2s ease forwards;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        /* 回到顶部按钮 */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 48px;
+            height: 48px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: var(--shadow);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            z-index: 99;
+        }
+        .back-to-top.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .back-to-top:hover {
+            background: var(--accent-dark);
+            transform: translateY(-4px);
+        }
+        /* ========== 导航栏样式（磨砂玻璃+固定） ========== */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--card-border);
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-text);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .logo i {
+            color: var(--accent);
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .nav-link::after {
+            content: "";
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: var(--text-primary);
+        }
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+        .mode-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .mode-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 12px var(--accent);
+        }
+        /* ========== 主页内容样式 ========== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 5%;
+        }
+        /* 头像区域 */
+        .avatar-section {
+            text-align: center;
+            padding: 4rem 0 2rem;
+            animation: slideUp 1s ease forwards;
+            opacity: 0;
+        }
+        @keyframes slideUp {
+            0% { transform: translateY(30px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        .avatar {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            border: 4px solid var(--accent);
+            box-shadow: 0 0 40px rgba(66, 165, 245, 0.4);
+            background: url("头像.jpg") center/cover no-repeat;
+            margin: 0 auto;
+            transition: all 0.6s ease;
+            animation: slowRotate 15s linear infinite;
+        }
+        .avatar:hover {
+            transform: rotate(360deg) scale(1.05);
+            box-shadow: 0 0 60px rgba(66, 165, 245, 0.6);
+            animation-play-state: paused;
+        }
+        @keyframes slowRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* 个人信息标题 */
+        .profile-title {
+            text-align: center;
+            margin: 2rem 0;
+            animation: slideUp 1s ease 0.2s forwards;
+            opacity: 0;
+        }
+        .greeting {
+            font-size: 1.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        .name {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: var(--gradient-text);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+        .typing-text {
+            font-size: 1.3rem;
+            color: var(--accent);
+            height: 1.6rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        .bio {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 1.5rem auto;
+            line-height: 1.8;
+        }
+        /* 按钮样式 */
+        .btn {
+            display: inline-block;
+            padding: 0.9rem 2.2rem;
+            background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1rem;
+            box-shadow: 0 4px 16px rgba(66, 165, 245, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: btnShine 2s infinite;
+        }
+        @keyframes btnShine {
+            100% { left: 100%; }
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(66, 165, 245, 0.6);
+        }
+        /* 个人信息卡片 */
+        .info-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 3rem 0;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+            animation: slideUp 1s ease 0.4s forwards;
+            opacity: 0;
+        }
+        .info-title {
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            background: var(--gradient-text);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.8rem;
+        }
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1.2rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+        }
+        .info-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .info-label {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .info-value {
+            font-size: 1.15rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        /* ========== 响应式适配（手机/平板） ========== */
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 1.2rem;
+                font-size: 0.9rem;
+            }
+            .name {
+                font-size: 2.5rem;
+            }
+            .typing-text {
+                font-size: 1.1rem;
+            }
+            .avatar {
+                width: 180px;
+                height: 180px;
+            }
+            .info-card {
+                padding: 1.8rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem 3%;
+            }
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+            }
+            .name {
+                font-size: 2rem;
+            }
+            .bio {
+                font-size: 1rem;
+                padding: 0 1rem;
+            }
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            .back-to-top {
+                width: 40px;
+                height: 40px;
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="page-loading">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-shield-halved"></i>
+            <span>杨应尧</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link active">主页</a>
+            <a href="skills.html" class="nav-link">技能</a>
+            <a href="contact.html" class="nav-link">联系我</a>
+        </div>
+        <button class="mode-toggle" id="modeToggle">
+            <i class="fas fa-sun"></i>
+            <span class="mode-text">浅色模式</span>
+        </button>
+    </nav>
+
+    <!-- 回到顶部按钮 -->
+    <div class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- 主页内容容器 -->
+    <div class="container">
+        <!-- 头像区域 -->
+        <section class="avatar-section">
+            <div class="avatar"></div>
+        </section>
+
+        <!-- 个人标题区域 -->
+        <section class="profile-title">
+            <h1 class="greeting">你好，我是</h1>
+            <h2 class="name">杨应尧</h2>
+            <div class="typing-text" id="typing"></div>
+            <p class="bio">
+                网络安全爱好者 & 漏洞修复者，专注于渗透测试、移动端安全研究，热衷于探索技术边界，分享实用的安全教程与工具使用技巧。
+                凭借扎实的技术能力，深耕网络安全领域，致力于守护网络空间安全。
+            </p>
+            <a href="skills.html" class="btn">查看我的技能</a>
+        </section>
+
+        <!-- 个人信息卡片 -->
+        <section class="info-card">
+            <h3 class="info-title">个人信息</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">姓名</span>
+                    <span class="info-value">杨应尧</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">性别</span>
+                    <span class="info-value">男</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">民族</span>
+                    <span class="info-value">汉族</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">出生日期</span>
+                    <span class="info-value">2008年07月</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">职业标签</span>
+                    <span class="info-value">漏洞修复者 / 渗透测试专家</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">技术领域</span>
+                    <span class="info-value">网络安全 / 移动端安全 / 漏洞挖掘</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">擅长方向</span>
+                    <span class="info-value">自动化扫描 / 漏洞分析 / 工具开发</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">个人理念</span>
+                    <span class="info-value">探索技术边界，守护网络安全</span>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // ========== 1. 深色/浅色模式切换（记忆偏好） ==========
+        const modeToggle = document.getElementById('modeToggle');
+        const modeText = modeToggle.querySelector('.mode-text');
+        const modeIcon = modeToggle.querySelector('i');
+        const body = document.body;
+        const savedMode = localStorage.getItem('themeMode');
+
+        // 初始化模式
+        if (savedMode === 'light') {
+            body.classList.add('light-mode');
+            modeText.textContent = '深色模式';
+            modeIcon.classList.replace('fa-sun', 'fa-moon');
+        }
+
+        // 切换逻辑
+        modeToggle.addEventListener('click', () => {
+            if (body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                modeText.textContent = '浅色模式';
+                modeIcon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem('themeMode', 'dark');
+            } else {
+                body.classList.add('light-mode');
+                modeText.textContent = '深色模式';
+                modeIcon.classList.replace('fa-sun', 'fa-moon');
+                localStorage.setItem('themeMode', 'light');
+            }
+        });
+
+        // ========== 2. 打字机效果（流畅循环） ==========
+        const typingElement = document.getElementById('typing');
+        const phrases = [
+            "网络安全爱好者 & 漏洞修复者",
+            "渗透测试专家 & 移动端安全研究员",
+            "Python安全工具开发者",
+            "探索技术边界的极客"
+        ];
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let typingSpeed = 120; // 打字速度
+        let deletingSpeed = 60; // 删除速度
+
+        function type() {
+            const currentPhrase = phrases[phraseIndex];
+            if (isDeleting) {
+                // 删除阶段
+                typingElement.textContent = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+                typingSpeed = deletingSpeed;
+            } else {
+                // 打字阶段
+                typingElement.textContent = currentPhrase.substring(0, charIndex + 1);
+                charIndex++;
+                typingSpeed = 120;
+            }
+
+            // 切换状态
+            if (!isDeleting && charIndex === currentPhrase.length) {
+                // 打完暂停
+                typingSpeed = 2000;
+                setTimeout(() => isDeleting = true, 2000);
+            } else if (isDeleting && charIndex === 0) {
+                // 删完切换短语
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+                typingSpeed = 500;
+            }
+
+            setTimeout(type, typingSpeed);
+        }
+
+        // 启动打字机
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(type, 1000);
+        });
+
+        // ========== 3. 回到顶部功能 ==========
+        const backToTop = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTop.classList.add('active');
+            } else {
+                backToTop.classList.remove('active');
+            }
+        });
+
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+</html>

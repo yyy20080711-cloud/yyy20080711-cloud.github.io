@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>联系我 | 杨应尧</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ========== 全局样式（与主页统一） ========== */
+        :root {
+            --bg-primary: #0a0e1f;
+            --bg-secondary: #12182d;
+            --text-primary: #f5f7ff;
+            --text-secondary: #9ba3af;
+            --accent: #42a5f5;
+            --accent-light: #64b5f6;
+            --accent-dark: #1e88e5;
+            --card-bg: rgba(18, 24, 45, 0.6);
+            --card-border: rgba(66, 165, 245, 0.2);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --gradient-text: linear-gradient(90deg, var(--accent), #ab47bc);
+            --gradient-bg: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+        }
+        .light-mode {
+            --bg-primary: #f0f4ff;
+            --bg-secondary: #e6eeff;
+            --text-primary: #12182d;
+            --text-secondary: #5e6573;
+            --accent: #1e88e5;
+            --accent-light: #42a5f5;
+            --accent-dark: #0d47a1;
+            --card-bg: rgba(255, 255, 255, 0.6);
+            --card-border: rgba(30, 136, 229, 0.2);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: "Inter", "Segoe UI", Tahoma, sans-serif;
+            background: var(--gradient-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 0;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        .page-loading {
+            opacity: 0;
+            animation: fadeIn 1.2s ease forwards;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 48px;
+            height: 48px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: var(--shadow);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            z-index: 99;
+        }
+        .back-to-top.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .back-to-top:hover {
+            background: var(--accent-dark);
+            transform: translateY(-4px);
+        }
+        /* ========== 导航栏样式（与主页统一） ========== */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--card-border);
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-text);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .logo i {
+            color: var(--accent);
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .nav-link::after {
+            content: "";
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: var(--text-primary);
+        }
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+        .mode-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .mode-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 12px var(--accent);
+        }
+        /* ========== 联系页面专属样式 ========== */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem 5%;
+        }
+        .section-title {
+            text-align: center;
+            font-size: 2.8rem;
+            background: var(--gradient-text);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 3rem 0 4rem;
+            animation: slideDown 1s ease forwards;
+            opacity: 0;
+        }
+        @keyframes slideDown {
+            0% { transform: translateY(-30px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        /* 联系主容器 */
+        .contact-wrapper {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+            animation: popIn 1s ease forwards;
+            opacity: 0;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.95); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .contact-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3.5rem;
+        }
+        /* 联系信息区域 */
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2.2rem;
+        }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.2rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+        .contact-item:hover {
+            transform: translateX(10px);
+            background: rgba(66, 165, 245, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .contact-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(66, 165, 245, 0.4);
+        }
+        .contact-text h3 {
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        .contact-text p {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+        }
+        /* 留言表单区域 */
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .form-group {
+            position: relative;
+        }
+        .form-input {
+            width: 100%;
+            padding: 1.2rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .form-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(66, 165, 245, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .form-input::placeholder {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        .form-textarea {
+            min-height: 180px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+        .form-btn {
+            padding: 1.2rem;
+            background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(66, 165, 245, 0.4);
+        }
+        .form-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(66, 165, 245, 0.6);
+        }
+        .form-btn:active {
+            transform: translateY(1px);
+        }
+        /* 弹窗样式 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            width: 90%;
+            max-width: 360px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            animation: modalPop 0.4s ease forwards;
+            transform: scale(0.9);
+        }
+        @keyframes modalPop {
+            0% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .modal-close:hover {
+            color: var(--accent);
+        }
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+        }
+        .modal-desc {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-size: 1.05rem;
+        }
+        .modal-img {
+            width: 100%;
+            max-width: 240px;
+            border-radius: 12px;
+            border: 3px solid var(--accent);
+            margin: 0 auto;
+            display: block;
+        }
+        /* 表单提交提示 */
+        .form-alert {
+            position: fixed;
+            top: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #10b981;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            box-shadow: var(--shadow);
+            z-index: 998;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .form-alert.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        /* ========== 响应式适配 ========== */
+        @media (max-width: 768px) {
+            .contact-container {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+            .contact-wrapper {
+                padding: 2rem;
+            }
+            .section-title {
+                font-size: 2.2rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem 3%;
+            }
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+            }
+            .section-title {
+                font-size: 1.8rem;
+                margin: 2rem 0 3rem;
+            }
+            .contact-wrapper {
+                padding: 1.5rem;
+            }
+            .contact-item {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            .contact-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+            .back-to-top {
+                width: 40px;
+                height: 40px;
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="page-loading">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-shield-halved"></i>
+            <span>杨应尧</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">主页</a>
+            <a href="skills.html" class="nav-link">技能</a>
+            <a href="contact.html" class="nav-link active">联系我</a>
+        </div>
+        <button class="mode-toggle" id="modeToggle">
+            <i class="fas fa-sun"></i>
+            <span class="mode-text">浅色模式</span>
+        </button>
+    </nav>
+
+    <!-- 回到顶部按钮 -->
+    <div class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- 联系内容容器 -->
+    <div class="container">
+        <h2 class="section-title">联系我</h2>
+        <div class="contact-wrapper">
+            <div class="contact-container">
+                <!-- 联系信息 -->
+                <div class="contact-info">
+                    <!-- 微信 -->
+                    <div class="contact-item" data-type="wechat">
+                        <div class="contact-icon">
+                            <i class="fab fa-weixin"></i>
+                        </div>
+                        <div class="contact-text">
+                            <h3>微信</h3>
+                            <p>yyy_20080711</p>
+                        </div>
+                    </div>
+
+                    <!-- QQ -->
+                    <div class="contact-item" data-type="qq">
+                        <div class="contact-icon">
+                            <i class="fab fa-qq"></i>
+                        </div>
+                        <div class="contact-text">
+                            <h3>QQ</h3>
+                            <p>3925595683</p>
+                        </div>
+                    </div>
+
+                    <!-- 邮箱 -->
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-text">
+                            <h3>邮箱</h3>
+                            <p>yyy_20080711@163.com</p>
+                        </div>
+                    </div>
+
+                    <!-- 电话 -->
+                    <div class="contact-item" data-type="phone">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-text">
+                            <h3>联系电话</h3>
+                            <p>130-9968-7560</p>
+                        </div>
+                    </div>
+
+                    <!-- 交流群 -->
+                    <div class="contact-item" data-type="group">
+                        <div class="contact-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="contact-text">
+                            <h3>交流Q群</h3>
+                            <p>971621716</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 留言表单 -->
+                <form class="contact-form" id="contactForm">
+                    <div class="form-group">
+                        <input type="text" class="form-input" placeholder="你的姓名 *" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" class="form-input" placeholder="你的邮箱 *" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea class="form-input form-textarea" placeholder="留言内容（可咨询安全问题/合作洽谈） *" required></textarea>
+                    </div>
+                    <button type="submit" class="form-btn">发送留言</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 二维码弹窗 -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">×</button>
+            <h3 class="modal-title" id="modalTitle"></h3>
+            <p class="modal-desc" id="modalDesc"></p>
+            <img src="" alt="二维码" class="modal-img" id="modalImg">
+        </div>
+    </div>
+
+    <!-- 表单提交提示 -->
+    <div class="form-alert" id="formAlert">留言发送成功！我会尽快回复你~</div>
+
+    <script>
+        // ========== 1. 模式切换（与主页同步） ==========
+        const modeToggle = document.getElementById('modeToggle');
+        const modeText = modeToggle.querySelector('.mode-text');
+        const modeIcon = modeToggle.querySelector('i');
+        const body = document.body;
+        const savedMode = localStorage.getItem('themeMode');
+
+        if (savedMode === 'light') {
+            body.classList.add('light-mode');
+            modeText.textContent = '深色模式';
+            modeIcon.classList.replace('fa-sun', 'fa-moon');
+        }
+
+        modeToggle.addEventListener('click', () => {
+            if (body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                modeText.textContent = '浅色模式';
+                modeIcon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem('themeMode', 'dark');
+            } else {
+                body.classList.add('light-mode');
+                modeText.textContent = '深色模式';
+                modeIcon.classList.replace('fa-sun', 'fa-moon');
+                localStorage.setItem('themeMode', 'light');
+            }
+        });
+
+        // ========== 2. 二维码弹窗逻辑 ==========
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDesc = document.getElementById('modalDesc');
+        const modalImg = document.getElementById('modalImg');
+        const modalClose = document.getElementById('modalClose');
+        const contactItems = document.querySelectorAll('.contact-item[data-type]');
+        const formAlert = document.getElementById('formAlert');
+
+        // 弹窗数据（图片路径为根目录）
+        const modalData = {
+            wechat: {
+                title: '我的微信',
+                desc: '微信号：yyy_20080711',
+                img: 'WX.jpg'
+            },
+            qq: {
+                title: '我的QQ',
+                desc: 'QQ号：3925595683',
+                img: 'QQ.jpg'
+            },
+            phone: {
+                title: '我的联系电话',
+                desc: '手机号：130-9968-7560',
+                img: '祎翱.png'
+            },
+            group
