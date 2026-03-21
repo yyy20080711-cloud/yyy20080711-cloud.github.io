@@ -576,29 +576,54 @@
         });
 
         // ========== 2. 二维码弹窗逻辑 ==========
-        const modal = document.getElementById('modal');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalDesc = document.getElementById('modalDesc');
-        const modalImg = document.getElementById('modalImg');
-        const modalClose = document.getElementById('modalClose');
-        const contactItems = document.querySelectorAll('.contact-item[data-type]');
-        const formAlert = document.getElementById('formAlert');
-
-        // 弹窗数据（图片路径为根目录）
-        const modalData = {
-            wechat: {
-                title: '我的微信',
-                desc: '微信号：yyy_20080711',
-                img: 'WX.jpg'
-            },
-            qq: {
-                title: '我的QQ',
-                desc: 'QQ号：3925595683',
-                img: 'QQ.jpg'
-            },
-            phone: {
-                title: '我的联系电话',
-                desc: '手机号：130-9968-7560',
-                img: '祎翱.png'
-            },
-            group
+        document.addEventListener('DOMContentLoaded', () => {
+            const overlay = document.getElementById('infoOverlay');
+            const overlayTitle = document.getElementById('overlayTitle');
+            const overlayDesc = document.getElementById('overlayDesc');
+            const overlayImg = document.getElementById('overlayImg');
+            const closeBtn = document.getElementById('closeBtn');
+            const contactItems = document.querySelectorAll('.contact-item[data-type]');
+            const itemData = {
+                wechat: {
+                    title: "微信终端",
+                    desc: "ID：yyy_20080711",
+                    img: "WX.jpg"
+                },
+                qq: {
+                    title: "QQ 终端",
+                    desc: "ID：3925595683",
+                    img: "QQ.jpg"
+                },
+                phone: {
+                    title: "电话终端",
+                    desc: "号码：130-9968-7560",
+                    img: "祎翱.png"
+                },
+                group: {
+                    title: "交流终端",
+                    desc: "Q群：971621716",
+                    img: "交流群.jpg"
+                }
+            };
+            overlayImg.onerror = () => {
+                overlayImg.src = "default.png";
+                overlayImg.alt = "终端二维码加载失败";
+            };
+            contactItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const type = item.getAttribute('data-type');
+                    const data = itemData[type];
+                    overlayTitle.textContent = data.title;
+                    overlayDesc.textContent = data.desc;
+                                       overlayImg.src = data.img;
+                    overlay.classList.add('active');
+                });
+            });
+            closeBtn.addEventListener('click', () => overlay.classList.remove('active'));
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) overlay.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>
