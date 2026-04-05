@@ -1,0 +1,221 @@
+NEW_FILE_CODE
+/* ========== 全局样式变量 ========== */
+:root {
+    --bg-primary: #0a0e1f;
+    --bg-secondary: #12182d;
+    --text-primary: #f5f7ff;
+    --text-secondary: #9ba3af;
+    --accent: #42a5f5;
+    --accent-light: #64b5f6;
+    --accent-dark: #1e88e5;
+    --card-bg: rgba(18, 24, 45, 0.6);
+    --card-border: rgba(66, 165, 245, 0.2);
+    --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --gradient-text: linear-gradient(90deg, var(--accent), #ab47bc);
+    --gradient-bg: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+}
+
+.light-mode {
+    --bg-primary: #f0f4ff;
+    --bg-secondary: #e6eeff;
+    --text-primary: #12182d;
+    --text-secondary: #5e6573;
+    --accent: #1e88e5;
+    --accent-light: #42a5f5;
+    --accent-dark: #0d47a1;
+    --card-bg: rgba(255, 255, 255, 0.6);
+    --card-border: rgba(30, 136, 229, 0.2);
+    --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* ========== 基础重置 ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: "Inter", "Segoe UI", Tahoma, sans-serif;
+    background: var(--gradient-bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+/* 页面加载动画 */
+.page-loading {
+    opacity: 0;
+    animation: fadeIn 1.2s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* 回到顶部按钮 */
+.back-to-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 48px;
+    height: 48px;
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    z-index: 99;
+    border: none;
+}
+
+.back-to-top.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.back-to-top:hover {
+    background: var(--accent-dark);
+    transform: translateY(-4px);
+}
+
+.back-to-top:focus {
+    outline: 2px solid var(--accent-light);
+    outline-offset: 2px;
+}
+
+/* ========== 导航栏样式 ========== */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5%;
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--card-border);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: var(--gradient-text);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo i {
+    color: var(--accent);
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.nav-link::after {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--text-primary);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+    width: 100%;
+}
+
+.mode-toggle {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-primary);
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.mode-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 12px var(--accent);
+}
+
+.mode-toggle:focus {
+    outline: 2px solid var(--accent-light);
+    outline-offset: 2px;
+}
+
+/* ========== 通用容器 ========== */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 5%;
+}
+
+/* ========== 响应式适配 ========== */
+@media (max-width: 768px) {
+    .nav-links {
+        gap: 1.2rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem 3%;
+    }
+    
+    .nav-links {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .back-to-top {
+        width: 40px;
+        height: 40px;
+        bottom: 1rem;
+        right: 1rem;
+    }
+}

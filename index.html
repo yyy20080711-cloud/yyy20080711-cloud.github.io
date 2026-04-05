@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="杨应尧的个人网站 - 网络安全专家，专注于渗透测试、移动端安全研究和漏洞修复">
+    <meta name="keywords" content="网络安全,渗透测试,漏洞修复,移动端安全,Python开发">
+    <meta name="author" content="杨应尧">
+    
+    <!-- Open Graph / 社交媒体分享 -->
+    <meta property="og:title" content="杨应尧 | 网络安全专家">
+    <meta property="og:description" content="网络安全爱好者 & 漏洞修复者，专注于渗透测试、移动端安全研究">
+    <meta property="og:type" content="website">
+    
+    <title>杨应尧 | 网络安全专家</title>
+    
+    <!-- 预加载关键资源 -->
+    <link rel="preload" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    
+    <style>
+        /* 主页专属样式 */
+        .avatar-section {
+            text-align: center;
+            padding: 4rem 0 2rem;
+            animation: slideUp 1s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes slideUp {
+            from { 
+                transform: translateY(30px); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateY(0); 
+                opacity: 1; 
+            }
+        }
+
+        .avatar {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            border: 4px solid var(--accent);
+            box-shadow: 0 0 40px rgba(66, 165, 245, 0.4);
+            background: url("头像.jpg") center/cover no-repeat;
+            margin: 0 auto;
+            transition: all 0.6s ease;
+            animation: slowRotate 15s linear infinite;
+        }
+
+        .avatar:hover {
+            transform: rotate(360deg) scale(1.05);
+            box-shadow: 0 0 60px rgba(66, 165, 245, 0.6);
+            animation-play-state: paused;
+        }
+
+        @keyframes slowRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .profile-title {
+            text-align: center;
+            margin: 2rem 0;
+            animation: slideUp 1s ease 0.2s forwards;
+            opacity: 0;
+        }
+
+        .greeting {
+            font-size: 1.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .name {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: var(--gradient-text);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .typing-text {
+            font-size: 1.3rem;
+            color: var(--accent);
+            height: 1.6rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .bio {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 1.5rem auto;
+            line-height: 1.8;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.9rem 2.2rem;
+            background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1rem;
+            box-shadow: 0 4px 16px rgba(66, 165, 245, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: btnShine 2s infinite;
+        }
+
+        @keyframes btnShine {
+            to { left: 100%; }
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(66, 165, 245, 0.6);
+        }
+
+        .btn:focus {
+            outline: 2px solid var(--accent-light);
+            outline-offset: 2px;
+        }
+
+        .info-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 3rem 0;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+            animation: slideUp 1s ease 0.4s forwards;
+            opacity: 0;
+        }
+
+        .info-title {
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            background: var(--gradient-text);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.8rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1.2rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .info-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-label {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .info-value {
+            font-size: 1.15rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .name {
+                font-size: 2.5rem;
+            }
+            .typing-text {
+                font-size: 1.1rem;
+            }
+            .avatar {
+                width: 180px;
+                height: 180px;
+            }
+            .info-card {
+                padding: 1.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .name {
+                font-size: 2rem;
+            }
+            .bio {
+                font-size: 1rem;
+                padding: 0 1rem;
+            }
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="page-loading">
+    <nav class="navbar" role="navigation" aria-label="主导航">
+        <div class="logo">
+            <i class="fas fa-shield-halved" aria-hidden="true"></i>
+            <span>杨应尧</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link active" aria-current="page">主页</a>
+            <a href="skills.html" class="nav-link">技能</a>
+            <a href="contact.html" class="nav-link">联系我</a>
+        </div>
+        <button class="mode-toggle" id="modeToggle" aria-label="切换主题模式">
+            <i class="fas fa-sun" aria-hidden="true"></i>
+            <span class="mode-text">浅色模式</span>
+        </button>
+    </nav>
+
+    <button class="back-to-top" id="backToTop" aria-label="回到顶部">
+        <i class="fas fa-arrow-up" aria-hidden="true"></i>
+    </button>
+
+    <main class="container">
+        <section class="avatar-section" aria-label="个人头像">
+            <div class="avatar" role="img" aria-label="杨应尧的头像"></div>
+        </section>
+
+        <section class="profile-title" aria-label="个人介绍">
+            <h1 class="greeting">你好，我是</h1>
+            <h2 class="name">杨应尧</h2>
+            <div class="typing-text" id="typing" aria-live="polite"></div>
+            <p class="bio">
+                网络安全爱好者 & 漏洞修复者，专注于渗透测试、移动端安全研究，热衷于探索技术边界，分享实用的安全教程与工具使用技巧。
+                凭借扎实的技术能力，深耕网络安全领域，致力于守护网络空间安全。
+            </p>
+            <a href="skills.html" class="btn">查看我的技能</a>
+        </section>
+
+        <section class="info-card" aria-label="个人信息">
+            <h3 class="info-title">个人信息</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">姓名</span>
+                    <span class="info-value">杨应尧</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">性别</span>
+                    <span class="info-value">男</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">民族</span>
+                    <span class="info-value">汉族</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">出生日期</span>
+                    <span class="info-value">2008年07月</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">职业标签</span>
+                    <span class="info-value">漏洞修复者 / 渗透测试专家</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">技术领域</span>
+                    <span class="info-value">网络安全 / 移动端安全 / 漏洞挖掘</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">擅长方向</span>
+                    <span class="info-value">自动化扫描 / 漏洞分析 / 工具开发</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">个人理念</span>
+                    <span class="info-value">探索技术边界，守护网络安全</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="scripts.js"></script>
+    <script>
+        // 打字机效果
+        (function() {
+            'use strict';
+            
+            const typingElement = document.getElementById('typing');
+            if (!typingElement) return;
+
+            const phrases = [
+                "网络安全爱好者 & 漏洞修复者",
+                "渗透测试专家 & 移动端安全研究员",
+                "Python安全工具开发者",
+                "探索技术边界的极客"
+            ];
+            
+            let phraseIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+            let typingSpeed = 120;
+            const deletingSpeed = 60;
+
+            function type() {
+                const currentPhrase = phrases[phraseIndex];
+                
+                if (isDeleting) {
+                    typingElement.textContent = currentPhrase.substring(0, charIndex - 1);
+                    charIndex--;
+                    typingSpeed = deletingSpeed;
+                } else {
+                    typingElement.textContent = currentPhrase.substring(0, charIndex + 1);
+                    charIndex++;
+                    typingSpeed = 120;
+                }
+
+                if (!isDeleting && charIndex === currentPhrase.length) {
+                    typingSpeed = 2000;
+                    setTimeout(() => { isDeleting = true; }, 2000);
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    phraseIndex = (phraseIndex + 1) % phrases.length;
+                    typingSpeed = 500;
+                }
+
+                setTimeout(type, typingSpeed);
+            }
+
+            setTimeout(type, 1000);
+        })();
+    </script>
+</body>
+</html>
