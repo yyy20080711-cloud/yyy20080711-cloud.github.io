@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="登录或注册杨应尧个人网站账号，账号数据保存在本机浏览器中">
+    <meta name="keywords" content="登录,注册,网络安全">
+    <meta name="author" content="杨应尧">
+    <meta name="theme-color" content="#0a0e1f">
+    <link rel="icon" href="头像.jpg" type="image/jpeg">
+    <link rel="canonical" href="https://yyy20080711-cloud.github.io/auth.html">
+
+    <meta property="og:title" content="登录注册 | 杨应尧">
+    <meta property="og:description" content="登录或注册账号，体验静态站点本地鉴权">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yyy20080711-cloud.github.io/auth.html">
+    <meta property="og:site_name" content="杨应尧">
+    <meta property="og:locale" content="zh_CN">
+    <meta property="og:image" content="https://yyy20080711-cloud.github.io/%E5%A4%B4%E5%83%8F.jpg">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="登录注册 | 杨应尧">
+    <meta name="twitter:description" content="登录或注册账号，体验静态站点本地鉴权">
+    <meta name="twitter:image" content="https://yyy20080711-cloud.github.io/%E5%A4%B4%E5%83%8F.jpg">
+
+    <title>登录注册 | 杨应尧</title>
+
+    <link rel="preload" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        .auth-page {
+            min-height: calc(100vh - 80px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 460px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 2.4rem 2.2rem 2rem;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+            animation: popIn 0.8s ease forwards;
+        }
+
+        @keyframes popIn {
+            from { transform: translateY(16px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .auth-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: var(--gradient-text);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .auth-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 1.6rem;
+            line-height: 1.6;
+        }
+
+        .auth-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 0.35rem;
+            margin-bottom: 1.6rem;
+        }
+
+        .light-mode .auth-tabs {
+            background: rgba(30, 136, 229, 0.06);
+        }
+
+        .auth-tab {
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            padding: 0.7rem 0;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .auth-tab.active {
+            background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(66, 165, 245, 0.35);
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.45rem;
+            font-weight: 600;
+            font-size: 0.92rem;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap i.prefix {
+            position: absolute;
+            left: 0.9rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .form-group input {
+            width: 100%;
+            height: 48px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-primary);
+            padding: 0 2.6rem 0 2.5rem;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .light-mode .form-group input {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.18);
+        }
+
+        .toggle-pass {
+            position: absolute;
+            right: 0.7rem;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+        }
+
+        .auth-submit {
+            width: 100%;
+            margin-top: 0.4rem;
+            height: 48px;
+            border: none;
+            border-radius: 30px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+            color: #fff;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(66, 165, 245, 0.4);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .auth-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(66, 165, 245, 0.55);
+        }
+
+        .auth-submit:disabled {
+            opacity: 0.7;
+            cursor: wait;
+            transform: none;
+        }
+
+        .auth-msg {
+            min-height: 1.4rem;
+            margin-top: 0.9rem;
+            text-align: center;
+            font-size: 0.92rem;
+            font-weight: 600;
+        }
+
+        .auth-msg.error { color: #ef5350; }
+        .auth-msg.success { color: #66bb6a; }
+
+        .auth-note {
+            margin-top: 1.2rem;
+            padding: 0.9rem 1rem;
+            border-radius: 12px;
+            background: rgba(66, 165, 245, 0.08);
+            border: 1px solid var(--card-border);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .logged-panel {
+            text-align: center;
+            display: none;
+        }
+
+        .logged-panel.active {
+            display: block;
+        }
+
+        .logged-avatar {
+            width: 84px;
+            height: 84px;
+            margin: 0 auto 1rem;
+            border-radius: 50%;
+            border: 3px solid var(--accent);
+            background: url("头像.jpg") center/cover no-repeat;
+            box-shadow: 0 0 24px rgba(66, 165, 245, 0.35);
+        }
+
+        .logged-name {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 0.4rem;
+        }
+
+        .logged-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1.4rem;
+        }
+
+        .logged-actions a,
+        .logged-actions button {
+            flex: 1;
+            height: 44px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logged-actions a {
+            background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+            color: #fff;
+        }
+
+        .logged-actions button {
+            border: 1px solid var(--card-border);
+            background: transparent;
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 1.6rem 1.2rem;
+            }
+            .auth-title {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body class="page-loading" data-page="auth">
+    <nav class="navbar" role="navigation" aria-label="主导航">
+        <div class="logo">
+            <i class="fas fa-shield-halved" aria-hidden="true"></i>
+            <span>杨应尧</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">主页</a>
+            <a href="skills.html" class="nav-link">技能</a>
+            <a href="contact.html" class="nav-link">联系我</a>
+            <a href="auth.html" class="nav-link active" id="authNavLink" aria-current="page">登录</a>
+            <div class="nav-auth" id="navAuth"></div>
+        </div>
+        <button class="mode-toggle" id="modeToggle" aria-label="切换主题模式">
+            <i class="fas fa-sun" aria-hidden="true"></i>
+            <span class="mode-text">浅色模式</span>
+        </button>
+    </nav>
+
+    <button class="back-to-top" id="backToTop" aria-label="回到顶部">
+        <i class="fas fa-arrow-up" aria-hidden="true"></i>
+    </button>
+
+    <main class="container auth-page">
+        <section class="auth-card" aria-label="登录注册">
+            <div id="guestPanel">
+                <h1 class="auth-title">账号中心</h1>
+                <p class="auth-subtitle">登录后可在导航栏看到你的用户名</p>
+
+                <div class="auth-tabs" role="tablist">
+                    <button type="button" class="auth-tab active" id="tabLogin" role="tab" aria-selected="true">登录</button>
+                    <button type="button" class="auth-tab" id="tabRegister" role="tab" aria-selected="false">注册</button>
+                </div>
+
+                <form class="auth-form active" id="loginForm" autocomplete="on">
+                    <div class="form-group">
+                        <label for="loginUsername">用户名</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-user prefix" aria-hidden="true"></i>
+                            <input id="loginUsername" name="username" type="text" maxlength="20" required placeholder="请输入用户名">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">密码</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-lock prefix" aria-hidden="true"></i>
+                            <input id="loginPassword" name="password" type="password" maxlength="64" required placeholder="请输入密码">
+                            <button type="button" class="toggle-pass" data-target="loginPassword" aria-label="显示密码">
+                                <i class="fas fa-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="auth-submit" id="loginBtn">登录</button>
+                </form>
+
+                <form class="auth-form" id="registerForm" autocomplete="on">
+                    <div class="form-group">
+                        <label for="regUsername">用户名</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-user prefix" aria-hidden="true"></i>
+                            <input id="regUsername" name="username" type="text" maxlength="20" required placeholder="3-20 个字符">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPassword">密码</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-lock prefix" aria-hidden="true"></i>
+                            <input id="regPassword" name="password" type="password" maxlength="64" required placeholder="至少 6 位">
+                            <button type="button" class="toggle-pass" data-target="regPassword" aria-label="显示密码">
+                                <i class="fas fa-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="regConfirm">确认密码</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-shield-halved prefix" aria-hidden="true"></i>
+                            <input id="regConfirm" name="confirm" type="password" maxlength="64" required placeholder="再次输入密码">
+                            <button type="button" class="toggle-pass" data-target="regConfirm" aria-label="显示密码">
+                                <i class="fas fa-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="auth-submit" id="registerBtn">注册并登录</button>
+                </form>
+
+                <p class="auth-msg" id="authMsg" role="status"></p>
+                <p class="auth-note">这是静态站点演示：账号和密码哈希保存在当前浏览器 localStorage 中，换设备或清缓存后需要重新注册。</p>
+            </div>
+
+            <div class="logged-panel" id="loggedPanel">
+                <div class="logged-avatar" role="img" aria-label="已登录头像"></div>
+                <h1 class="auth-title">欢迎回来</h1>
+                <p class="logged-name" id="loggedName"></p>
+                <p class="auth-subtitle">你已登录，可以返回主页继续浏览</p>
+                <div class="logged-actions">
+                    <a href="index.html">返回主页</a>
+                    <button type="button" id="pageLogoutBtn">退出登录</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="auth.js"></script>
+    <script src="scripts.js"></script>
+    <script>
+        (function () {
+            var tabLogin = document.getElementById('tabLogin');
+            var tabRegister = document.getElementById('tabRegister');
+            var loginForm = document.getElementById('loginForm');
+            var registerForm = document.getElementById('registerForm');
+            var msg = document.getElementById('authMsg');
+            var guestPanel = document.getElementById('guestPanel');
+            var loggedPanel = document.getElementById('loggedPanel');
+
+            function showMsg(text, type) {
+                msg.textContent = text || '';
+                msg.className = 'auth-msg' + (type ? ' ' + type : '');
+            }
+
+            function switchTab(mode) {
+                var isLogin = mode === 'login';
+                tabLogin.classList.toggle('active', isLogin);
+                tabRegister.classList.toggle('active', !isLogin);
+                tabLogin.setAttribute('aria-selected', String(isLogin));
+                tabRegister.setAttribute('aria-selected', String(!isLogin));
+                loginForm.classList.toggle('active', isLogin);
+                registerForm.classList.toggle('active', !isLogin);
+                showMsg('', '');
+            }
+
+            function renderPage() {
+                var session = window.SiteAuth.getSession();
+                if (session && session.username) {
+                    guestPanel.style.display = 'none';
+                    loggedPanel.classList.add('active');
+                    document.getElementById('loggedName').textContent = session.username;
+                } else {
+                    guestPanel.style.display = 'block';
+                    loggedPanel.classList.remove('active');
+                }
+            }
+
+            tabLogin.addEventListener('click', function () { switchTab('login'); });
+            tabRegister.addEventListener('click', function () { switchTab('register'); });
+
+            document.querySelectorAll('.toggle-pass').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var input = document.getElementById(btn.getAttribute('data-target'));
+                    if (!input) return;
+                    var hidden = input.type === 'password';
+                    input.type = hidden ? 'text' : 'password';
+                    btn.querySelector('i').className = hidden ? 'fas fa-eye-slash' : 'fas fa-eye';
+                });
+            });
+
+            loginForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                var btn = document.getElementById('loginBtn');
+                btn.disabled = true;
+                window.SiteAuth.login(
+                    document.getElementById('loginUsername').value.trim(),
+                    document.getElementById('loginPassword').value
+                ).then(function (res) {
+                    showMsg(res.message, res.ok ? 'success' : 'error');
+                    if (res.ok) {
+                        window.SiteAuth.renderNav();
+                        setTimeout(function () { window.location.href = 'index.html'; }, 600);
+                    }
+                }).finally(function () {
+                    btn.disabled = false;
+                });
+            });
+
+            registerForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                var btn = document.getElementById('registerBtn');
+                btn.disabled = true;
+                window.SiteAuth.register(
+                    document.getElementById('regUsername').value.trim(),
+                    document.getElementById('regPassword').value,
+                    document.getElementById('regConfirm').value
+                ).then(function (res) {
+                    showMsg(res.message, res.ok ? 'success' : 'error');
+                    if (res.ok) {
+                        window.SiteAuth.renderNav();
+                        setTimeout(function () { window.location.href = 'index.html'; }, 700);
+                    }
+                }).finally(function () {
+                    btn.disabled = false;
+                });
+            });
+
+            document.getElementById('pageLogoutBtn').addEventListener('click', function () {
+                window.SiteAuth.logout();
+                window.SiteAuth.renderNav();
+                renderPage();
+                showMsg('已退出登录', 'success');
+            });
+
+            renderPage();
+        })();
+    </script>
+</body>
+</html>

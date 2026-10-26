@@ -135,6 +135,45 @@ body {
     align-items: center;
 }
 
+.nav-auth {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.nav-user {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.95rem;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nav-user i {
+    color: var(--accent);
+}
+
+.nav-logout {
+    background: transparent;
+    border: 1px solid var(--card-border);
+    color: var(--text-primary);
+    padding: 0.35rem 0.75rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.nav-logout:hover {
+    border-color: var(--accent);
+    background: var(--hover-bg);
+}
+
 .nav-link {
     color: var(--text-secondary);
     text-decoration: none;
